@@ -1,0 +1,266 @@
+{
+  "title": "Pool: Deposit",
+  "description": "Test cases for the deposit function.",
+  "stories": [
+    {
+      "description": "User 0 Deposits 14760.147 RUSD in an empty reserve",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 deposits 14760.147 RUSD after user 0",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "1"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 0 deposits 14760.147 USDT in an empty reserve",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "USDT",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "USDT",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "USDT",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 deposits 14760.147 USDT after user 0",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "USDT",
+            "amount": "14760.147",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "USDT",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "USDT",
+            "amount": "14760.147",
+            "user": "1"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 0 deposits 1 WETH in an empty reserve",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "0"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 deposits 1 WETH after user 0",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "1"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 deposits 0 WETH (revert expected)",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "0",
+            "user": "1"
+          },
+          "expected": "revert",
+          "revertMessage": "Amount must be greater than 0"
+        }
+      ]
+    },
+    {
+      "description": "User 1 deposits 0 RUSD",
+      "actions": [
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "0",
+            "user": "1"
+          },
+          "expected": "revert",
+          "revertMessage": "Amount must be greater than 0"
+        }
+      ]
+    },
+    {
+      "description": "User 1 deposits 1476.01 RUSD on behalf of user 2, user 2 tries to borrow 0.1 WETH",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "user": "1",
+            "onBehalfOf": "2"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "WETH",
+            "amount": "0.1",
+            "borrowRateMode": "variable",
+            "user": "2"
+          },
+          "expected": "success"
+        }
+      ]
+    }
+  ]
+}

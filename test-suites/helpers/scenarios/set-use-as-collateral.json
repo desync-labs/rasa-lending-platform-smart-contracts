@@ -1,0 +1,236 @@
+{
+  "title": "Pool: Usage as collateral",
+  "description": "Test cases for the setUserUseReserveAsCollateral() function.",
+  "stories": [
+    {
+      "description": "User 0 Deposits 14760.147 RUSD, disables RUSD as collateral",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "RUSD",
+            "user": "0",
+            "useAsCollateral": "false"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 Deposits 2 WETH, disables WETH as collateral, borrows 5904.05 RUSD (revert expected)",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "2",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "2",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "WETH",
+            "user": "1",
+            "useAsCollateral": "false"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "5904.05",
+            "borrowRateMode": "variable",
+            "user": "1"
+          },
+          "expected": "revert",
+          "revertMessage": "The collateral balance is 0"
+        }
+      ]
+    },
+    {
+      "description": "User 1 enables WETH as collateral, borrows 5904.05 RUSD",
+      "actions": [
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "WETH",
+            "user": "1",
+            "useAsCollateral": "true"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "5904.05",
+            "borrowRateMode": "variable",
+            "user": "1"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 disables WETH as collateral (revert expected)",
+      "actions": [
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "WETH",
+            "user": "1",
+            "useAsCollateral": "false"
+          },
+          "expected": "revert",
+          "revertMessage": "User deposit is already being used as collateral"
+        }
+      ]
+    },
+    {
+      "description": "User 1 Deposits 10 CGO, disables WETH as collateral. Should revert as 10 CGO are not enough to cover the debt (revert expected)",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "CGO",
+            "amount": "10",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "CGO",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "CGO",
+            "amount": "10",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "WETH",
+            "user": "1",
+            "useAsCollateral": "false"
+          },
+          "expected": "revert"
+        }
+      ]
+    },
+    {
+      "description": "User 1 Deposits 640 more CGO (enough to cover the RUSD debt), disables WETH as collateral",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "CGO",
+            "amount": "640",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "CGO",
+            "amount": "640",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "WETH",
+            "user": "1",
+            "useAsCollateral": "false"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 disables CGO as collateral (revert expected)",
+      "actions": [
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "CGO",
+            "user": "1",
+            "useAsCollateral": "false"
+          },
+          "expected": "revert"
+        }
+      ]
+    },
+    {
+      "description": "User 1 reenables WETH as collateral",
+      "actions": [
+        {
+          "name": "setUseAsCollateral",
+          "args": {
+            "reserve": "WETH",
+            "user": "1",
+            "useAsCollateral": "true"
+          },
+          "expected": "success"
+        }
+      ]
+    }
+  ]
+}

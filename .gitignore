@@ -1,0 +1,17 @@
+.env
+#Hardhat files
+cache
+artifacts
+node_modules
+dist/
+build/
+.vscode
+.idea
+/types
+contracts/hardhat-dependency-compiler
+deployments/
+deployments-log
+package-lock.json
+
+deployed-contracts.json
+.DS_Store

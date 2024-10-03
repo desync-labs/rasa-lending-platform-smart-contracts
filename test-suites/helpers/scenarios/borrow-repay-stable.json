@@ -1,0 +1,656 @@
+{
+  "title": "Pool: Borrow/repay (stable rate)",
+  "description": "Test cases for the borrow function, stable mode.",
+  "stories": [
+    {
+      "description": "User 0 deposits 14760.147 RUSD, user 1 deposits 1 WETH as collateral and borrows 1476.01 RUSD at stable rate",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+
+            "amount": "1",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "borrowRateMode": "stable",
+            "user": "1",
+            "timeTravel": "365"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 tries to borrow the rest of the RUSD liquidity (revert expected)",
+      "actions": [
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "13284.132",
+            "borrowRateMode": "stable",
+            "user": "1"
+          },
+          "expected": "revert",
+          "revertMessage": "There is not enough collateral to cover a new borrow"
+        }
+      ]
+    },
+    {
+      "description": "User 1 repays half of the RUSD borrow after one year",
+      "actions": [
+        {
+          "name": "mint",
+          "description": "Mint 10 RUSD to cover the interest",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "147.60",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "738",
+            "user": "1",
+            "onBehalfOf": "1",
+            "borrowRateMode": "stable"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 repays the rest of the RUSD borrow after one year",
+      "actions": [
+        {
+          "name": "mint",
+          "description": "Mint 221.40 RUSD to cover the interest",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "221.40",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "1",
+            "onBehalfOf": "1",
+            "borrowRateMode": "stable"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 0 withdraws the deposited RUSD plus interest",
+      "actions": [
+        {
+          "name": "withdraw",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "0"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 1 deposits 14760.147 RUSD, user 2 tries to borrow 14760.147 RUSD at a stable rate without any collateral (revert expected) User 1 withdrawws",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "borrowRateMode": "stable",
+            "user": "2"
+          },
+          "expected": "revert",
+          "revertMessage": "The collateral balance is 0"
+        },
+        {
+          "name": "withdraw",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "1"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 0 deposits 14760.147 RUSD, user 1,2,3,4 deposit 1 WETH each and borrow 1476.01 RUSD at stable rate. Everything is repaid, user 0 withdraws",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "borrowRateMode": "stable",
+            "user": "1",
+            "timeTravel": "365"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "2"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "2"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "2"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "borrowRateMode": "stable",
+            "user": "2",
+            "timeTravel": "365"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "3"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "3"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "3"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "borrowRateMode": "stable",
+            "user": "3",
+            "timeTravel": "365"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "4"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "4"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "1",
+            "user": "4"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "borrowRateMode": "stable",
+            "user": "4",
+            "timeTravel": "365"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "description": "Mint 1476.01 RUSD to cover the interest",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "1",
+            "onBehalfOf": "1",
+            "borrowRateMode": "stable"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "description": "Mint 1476.01 RUSD to cover the interest",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "user": "2"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "2"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "2",
+            "onBehalfOf": "2",
+            "borrowRateMode": "stable"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "description": "Mint 1476.01 RUSD to cover the interest",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "user": "3"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "3"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "3",
+            "onBehalfOf": "3",
+            "borrowRateMode": "stable"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "description": "Mint 1476.01 RUSD to cover the interest",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "user": "4"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "4"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "4",
+            "onBehalfOf": "4",
+            "borrowRateMode": "stable"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "withdraw",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "0"
+          },
+          "expected": "success"
+        }
+      ]
+    },
+    {
+      "description": "User 0 deposits 14760.147 RUSD, user 1 deposits 2 WETH and borrow 1476.01 RUSD at stable rate first, then 1476.01 RUSD at variable rate, repays everything. User 0 withdraws",
+      "actions": [
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "14760.147",
+            "user": "0"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "args": {
+            "reserve": "WETH",
+            "amount": "2",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "WETH",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "deposit",
+          "args": {
+            "reserve": "WETH",
+            "amount": "2",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "borrowRateMode": "stable",
+            "user": "1",
+            "timeTravel": "365"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "borrow",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "1476.01",
+            "borrowRateMode": "variable",
+            "user": "1",
+            "timeTravel": "365"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "mint",
+          "description": "Mint 738 RUSD to cover the interest",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "738",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "approve",
+          "args": {
+            "reserve": "RUSD",
+            "user": "1"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "1",
+            "onBehalfOf": "1",
+            "borrowRateMode": "stable"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "repay",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "1",
+            "onBehalfOf": "1",
+            "borrowRateMode": "variable"
+          },
+          "expected": "success"
+        },
+        {
+          "name": "withdraw",
+          "args": {
+            "reserve": "RUSD",
+            "amount": "-1",
+            "user": "0"
+          },
+          "expected": "success"
+        }
+      ]
+    }
+  ]
+}
